@@ -1,0 +1,20 @@
+.img-thumbnail {
+    margin: 25px;
+    width: 85%;
+    height: 85%;
+    border: 1px solid #6f24c1;
+}
+
+.card-body {
+    padding: 0 25px;
+}
+
+.card-footer {
+    padding: 10px 15px;
+    border-top: none;
+
+}
+
+.ngx-gallery-thumbnail.ngx-gallery-active {
+    border: 1px double #ea39b8;
+}
