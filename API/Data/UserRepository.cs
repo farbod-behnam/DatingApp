@@ -30,8 +30,10 @@ namespace API.Data
             //     .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             //     .SingleOrDefaultAsync();
 
-            ICollection<PhotoDto> photoDtos = await GetMemberPhotosAsync(username);
-            string photoUrl = await GetMemberMainPhotoUrl(username);
+
+            // 
+            // ICollection<PhotoDto> photoDtos = await GetMemberPhotosAsync(username);
+            // string photoUrl = await GetMemberMainPhotoUrl(username);
 
             return await _context.Users
                 .Where(row => row.UserName == username)
@@ -39,7 +41,7 @@ namespace API.Data
                 {
                     Id = user.Id,
                     Username = user.UserName,
-                    PhotoUrl = photoUrl,
+                    PhotoUrl = user.Photos.Where(photo => photo.IsMain == true).Select(photo => photo.Url).SingleOrDefault(),
                     Age = user.DateOfBirth.CalculateAge(),
                     KnownAs = user.KnownAs,
                     Created = user.Created,
@@ -50,7 +52,12 @@ namespace API.Data
                     Interests = user.Interests,
                     City = user.City,
                     Country = user.Country,
-                    Photos = photoDtos
+                    Photos = user.Photos.Select(photo => new PhotoDto
+                    {
+                        Id = photo.Id,
+                        Url = photo.Url,
+                        IsMain = photo.IsMain
+                    }).ToList()
                 }).SingleOrDefaultAsync();
         }
 
