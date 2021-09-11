@@ -23,7 +23,7 @@ namespace API
             try
             {
                 DataContext context = services.GetRequiredService<DataContext>();
-                await context.Database.MigrateAsync();
+                await context.Database.MigrateAsync(); // dotnet ef database update
                 await Seed.SeedUsers(context);
             }
             catch (Exception ex)
