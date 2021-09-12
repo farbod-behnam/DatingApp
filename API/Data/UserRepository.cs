@@ -77,7 +77,7 @@ namespace API.Data
         public async Task<ICollection<PhotoDto>> GetMemberPhotosAsync(string username)
         {
 
-            List<PhotoDto> photoDtosNew = await _context.Users
+            return await _context.Users
                 .Where(user => user.UserName == username)
                 .SelectMany(user => user.Photos, (user, photo) => new PhotoDto 
                 {
@@ -85,8 +85,6 @@ namespace API.Data
                     Url = photo.Url,
                     IsMain = photo.IsMain
                 }).ToListAsync();
-
-            return photoDtosNew;
           
         }
 

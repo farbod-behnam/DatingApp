@@ -58,7 +58,8 @@ namespace API.Controllers
 
             _userRepository.Update(user);
 
-            if (await _userRepository.SaveAllAsync()) return Ok("User updated");
+            if (await _userRepository.SaveAllAsync()) return NoContent();
+            // Ok("Profile updated successfully");
 
             return BadRequest("Failed to update user");
 
