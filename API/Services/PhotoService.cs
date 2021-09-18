@@ -1,4 +1,3 @@
-using System.IO;
 using System.Threading.Tasks;
 using API.Helpers;
 using API.Interfaces;
@@ -32,7 +31,8 @@ namespace API.Services
 
             if (file.Length > 0)
             {
-                using Stream stream = file.OpenReadStream();
+                using System.IO.Stream stream = file.OpenReadStream();
+
                 ImageUploadParams uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(file.FileName, stream),

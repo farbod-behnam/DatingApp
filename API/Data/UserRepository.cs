@@ -61,32 +61,8 @@ namespace API.Data
                 }).SingleOrDefaultAsync();
         }
 
-        public async Task<string> GetMemberMainPhotoUrl(string username)
-        {
-            ICollection<PhotoDto> photoDtos = await GetMemberPhotosAsync(username);
 
-            foreach (var photo in photoDtos)
-            {
-                if (photo.IsMain) 
-                    return photo.Url;
-            }
 
-            return null;
-        }
-
-        public async Task<ICollection<PhotoDto>> GetMemberPhotosAsync(string username)
-        {
-
-            return await _context.Users
-                .Where(user => user.UserName == username)
-                .SelectMany(user => user.Photos, (user, photo) => new PhotoDto 
-                {
-                    Id = photo.Id,
-                    Url = photo.Url,
-                    IsMain = photo.IsMain
-                }).ToListAsync();
-          
-        }
 
         public async Task<IEnumerable<MemberDto>> GetMembersAsync()
         {
