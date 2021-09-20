@@ -103,7 +103,7 @@ namespace API.Controllers
                     IsMain = photo.IsMain
                 };
 
-                return CreatedAtRoute("GetUser", new {username = username},photoDtoResult);
+                return CreatedAtRoute("GetUser", new {username = username} ,photoDtoResult);
             }
 
             return BadRequest("Problem adding photo");
@@ -118,7 +118,7 @@ namespace API.Controllers
             Photo photo = user.Photos.FirstOrDefault(photo => photo.Id == photoId);
 
             if (photo.IsMain)
-                return BadRequest("This is already  your main photo");
+                return BadRequest("This is already your main photo");
 
             Photo currentMainPhoto = user.Photos.FirstOrDefault(photo => photo.IsMain == true);
 
@@ -129,9 +129,44 @@ namespace API.Controllers
             // turn the new photo to main
             photo.IsMain = true;
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();
+            if (await _userRepository.SaveAllAsync()) 
+                return NoContent();
 
             return BadRequest("Failed to set main photo");
+        }
+
+        [HttpDelete("delete-photo/{photoId}")]
+        public async Task<ActionResult> DeletePhoto(int photoId)
+        {
+            string username = User.GetUsername();
+            AppUser user = await _userRepository.GetUserByUsernameAsync(username);
+
+            Photo photo = user.Photos.FirstOrDefault(photo => photo.Id == photoId);
+
+            if (photo == null)
+                return NotFound();
+
+            if (photo.IsMain)
+                return BadRequest("You cannot delete your main photo");
+
+            // if photo is stored in cloudinary too, remove it from there as well
+            if (photo.PublicId != null)
+            {
+                DeletionResult result = await _photoService.DeletePhotoAsync(photo.PublicId);
+
+                if (result.Error != null)
+                    return BadRequest(result.Error.Message);
+            }
+
+            // remove it from database
+            user.Photos.Remove(photo);
+
+            if (await _userRepository.SaveAllAsync())
+                return Ok();
+
+            
+            return BadRequest("Failed to delete the photo");
+
         }
     }
 }
