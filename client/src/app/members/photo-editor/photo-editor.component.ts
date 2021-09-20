@@ -1,9 +1,13 @@
+import { ThrowStmt } from '@angular/compiler';
+import { LEADING_TRIVIA_CHARS } from '@angular/compiler/src/render3/view/template';
 import { Component, Input, OnInit } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { take } from 'rxjs/operators';
 import { Member } from 'src/app/_models/member';
+import { Photo } from 'src/app/_models/photo';
 import { User } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
+import { MembersService } from 'src/app/_services/members.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -19,7 +23,7 @@ export class PhotoEditorComponent implements OnInit {
   baseUrl = environment.apiUrl;
   user: User | null | undefined;
 
-  constructor(private accountService: AccountService) {
+  constructor(private accountService: AccountService, private memberService: MembersService) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
    }
 
@@ -54,6 +58,26 @@ export class PhotoEditorComponent implements OnInit {
       }
     }
 
+  }
+
+  setMainPhoto(photo: Photo) {
+    this.memberService.setMainPhoto(photo.id).subscribe(() => {
+      if (this.user && this.member) {
+        this.user.photoUrl = photo.url;
+
+        this.accountService.setCurrentUser(this.user);
+
+        this.member.photoUrl = photo.url;
+
+        this.member.photos.forEach(ph => {
+          if (ph.isMain)
+            ph.isMain = false;
+
+          if (ph.id === photo.id)
+            ph.isMain = true;
+        })
+      }
+    })
   }
 
 }
