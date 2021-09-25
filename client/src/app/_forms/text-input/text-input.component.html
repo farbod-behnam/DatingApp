@@ -4,7 +4,8 @@
         type="{{type}}" 
         class="form-control" 
         [formControl]="$any(ngControl.control)"
-        placeholder="{{label}}">
+        placeholder="{{label}}"
+    >
     <div *ngIf="ngControl.control?.errors?.required" class="invalid-feedback">
         Please enter a {{label}}
     </div>

@@ -15,11 +15,15 @@ export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter();
   model: any = {};
   registerForm!: FormGroup;
+  maxDate: Date | undefined;
 
   constructor(private accountService: AccountService, private toastr: ToastrService, private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.initializeForm();
+    // user must be over 18 years old
+    this.maxDate = new Date();
+    this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
   }
 
   initializeForm() {
