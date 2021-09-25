@@ -33,16 +33,20 @@
         <tabset class="member-tabset">
             <tab heading='About {{member.knownAs}}'>
                 <h4>Description</h4>
-                <p>{{member.introduction}}</p>
+                <p *ngIf="member.introduction; else elseDescription">{{member.introduction}}</p>
+                <ng-template #elseDescription><p>Not yet updated by {{member.knownAs}}</p></ng-template>
                 <h4>Looking for</h4>
-                <p>{{member.lookingFor}}</p>
+                <p *ngIf="member.lookingFor; else elseLookingFor">{{member.lookingFor}}</p>
+                <ng-template #elseLookingFor><p>Not yet updated by {{member.knownAs}}</p></ng-template>
             </tab>
             <tab heading='Interests'>
                 <h4>Interests</h4>
-                <p>{{member.interests}}</p>
+                <p *ngIf="member.interests; else elseInterests">{{member.interests}}</p>
+                <ng-template #elseInterests><p>Not yet updated by {{member.knownAs}}</p></ng-template>
             </tab>
             <tab heading='Photos'>
-                <ngx-gallery [options]="galleryOptions" [images]="galleryImages" style="display: inline-block; margin-bottom: 20px;"></ngx-gallery>
+                <ngx-gallery *ngIf="member.photos.length > 0; else elsePhotos" [options]="galleryOptions" [images]="galleryImages" style="display: inline-block; margin-bottom: 20px;"></ngx-gallery>
+                <ng-template #elsePhotos><p>{{member.knownAs}} has not uploaded any photo yet</p></ng-template>
             </tab>
             <tab heading='Messages'>
                 <p>Messages will go here</p>
