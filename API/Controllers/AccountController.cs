@@ -34,6 +34,11 @@ namespace API.Controllers
             AppUser user = new AppUser
             {
                 UserName = registerDto.Username,
+                KnownAs = registerDto.KnownAs,
+                Gender = registerDto.Gender,
+                DateOfBirth = registerDto.DateOfBirth,
+                City = registerDto.City,
+                Country = registerDto.Country,
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
                 PasswordSalt = hmac.Key
             };
@@ -44,7 +49,8 @@ namespace API.Controllers
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                KnownAs = user.KnownAs
             };
         }
 
@@ -73,7 +79,8 @@ namespace API.Controllers
             {
                 Username = user.UserName,
                 Token = _tokenService.CreateToken(user),
-                PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain == true)?.Url
+                PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain == true)?.Url,
+                KnownAs = user.KnownAs
             };
 
         }
