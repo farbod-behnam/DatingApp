@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -64,14 +65,14 @@ namespace API.Data
 
 
 
-        public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+        public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
             // return await _context.Users
             //     .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             //     .ToListAsync();
 
 
-            return await _context.Users
+            IQueryable<MemberDto> query = _context.Users
                 .Select(user => new MemberDto
                 {
                     Id = user.Id,
@@ -93,7 +94,9 @@ namespace API.Data
                         Url = photo.Url,
                         IsMain = photo.IsMain
                     }).ToList()
-                }).ToListAsync();
+                }).AsNoTracking();
+
+                return await PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)
