@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Member } from '../_models/member';
 import { PaginatedResult } from '../_models/pagination';
+import { UserParams } from '../_models/userParams';
 
 
 
@@ -15,37 +16,21 @@ export class MembersService {
 
   baseUrl: string = environment.apiUrl;
   members: Member[] = [];
-  paginatedResult: PaginatedResult<Member[]> = new PaginatedResult<Member[]>();
 
   constructor(private http: HttpClient) { }
 
-  getMembers(page?: number, itemsPerPage?: number) {
-    // caching
-    // if (this.members.length > 0) return of(this.members);
+  getMembers(userParams: UserParams) {
 
-    let params = new HttpParams();
 
-    if (page !== undefined && itemsPerPage !== undefined) {
-      params = params.append('pageNumber', page.toString());
-      params = params.append('pageSize', itemsPerPage.toString());
-    }
+    let params = this.getPaginationHeaders(userParams.pageNumber, userParams.pageSize)
 
-    return this.http.get<Member[]>(this.baseUrl + 'users', {observe: 'response', params}).pipe(
-     map(response => {
+    params = params.append('minAge', userParams.minAge.toString());
+    params = params.append('maxAge', userParams.maxAge.toString());
+    params = params.append('gender', userParams.gender);
 
-       if (response.body !== null) {
-        this.paginatedResult.result = response.body; // members array
-
-        const pagination = response.headers.get('Pagination');
-        if (pagination !== null) {
-          this.paginatedResult.pagination = JSON.parse(pagination);
-
-        }
-       }
-        return this.paginatedResult;
-     }) 
-    )
+    return this.getPaginatedResult<Member[]>(this.baseUrl + 'users', params);
   }
+
 
   getMember(username: string) {
     const member = this.members.find(mem => mem.username === username);
@@ -70,6 +55,38 @@ export class MembersService {
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
   }
+
+  private getPaginatedResult<T>(url: string, params: HttpParams) {
+
+    const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
+
+    return this.http.get<T>(url, { observe: 'response', params }).pipe(
+      map(response => {
+
+        if (response.body !== null) {
+          paginatedResult.result = response.body; // members array
+
+          const pagination = response.headers.get('Pagination');
+          if (pagination !== null) {
+            paginatedResult.pagination = JSON.parse(pagination);
+
+          }
+        }
+        return paginatedResult;
+      })
+    );
+  }
+
+  private getPaginationHeaders(pageNumber: number, pageSize: number) {
+
+    let params = new HttpParams();
+
+    params = params.append('pageNumber', pageNumber.toString());
+    params = params.append('pageSize', pageSize.toString());
+
+    return params;
+  }
+
 }
 
 
