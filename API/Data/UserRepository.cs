@@ -72,7 +72,15 @@ namespace API.Data
             //     .ToListAsync();
 
 
-            IQueryable<MemberDto> query = _context.Users
+            IQueryable<AppUser> query = _context.Users.AsQueryable();
+
+            // filter out current user from member list
+            query = query.Where(user => user.UserName != userParams.CurrentUsername);
+            // filter opposite gender from member list
+            query = query.Where(user => user.Gender == userParams.Gender);
+
+
+            IQueryable<MemberDto> result = query
                 .Select(user => new MemberDto
                 {
                     Id = user.Id,
@@ -96,7 +104,7 @@ namespace API.Data
                     }).ToList()
                 }).AsNoTracking();
 
-                return await PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+            return await PagedList<MemberDto>.CreateAsync(result, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)
