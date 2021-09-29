@@ -79,6 +79,11 @@ namespace API.Data
             // filter opposite gender from member list
             query = query.Where(user => user.Gender == userParams.Gender);
 
+            DateTime minDateOfBirth = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+            DateTime maxDateOfBirth = DateTime.Today.AddYears(-userParams.MinAge);
+
+            // limit the list based on age default is 18 < age < 150
+            query = query.Where(user => user.DateOfBirth >= minDateOfBirth && user.DateOfBirth <= maxDateOfBirth);
 
             IQueryable<MemberDto> result = query
                 .Select(user => new MemberDto
