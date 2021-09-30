@@ -85,6 +85,12 @@ namespace API.Data
             // limit the list based on age default is 18 < age < 150
             query = query.Where(user => user.DateOfBirth >= minDateOfBirth && user.DateOfBirth <= maxDateOfBirth);
 
+            query = userParams.OrderBy switch
+            {
+                "created" => query.OrderByDescending(user => user.Created),
+                _ => query.OrderByDescending(user => user.LastActive)
+            };
+
             IQueryable<MemberDto> result = query
                 .Select(user => new MemberDto
                 {
