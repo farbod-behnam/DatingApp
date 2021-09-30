@@ -18,8 +18,9 @@ export class MemberListComponent implements OnInit {
   // members$: Observable<Member[]> | undefined;
   members: Member[] | undefined;
   pagination: Pagination | undefined;
-  userParams: UserParams | undefined;
+  userParams!: UserParams;
   user: User | undefined;
+  genderList = [{value: 'male', display: 'Males'}, {value: 'female', display: 'Females'}];
 
 
   constructor(private memberService: MembersService, private accountService: AccountService) {
@@ -50,6 +51,16 @@ export class MemberListComponent implements OnInit {
       console.log('user params is null')
     }
 
+  }
+
+  resetFilters() {
+    if (this.user) {
+      this.userParams = new UserParams(this.user);
+      this.loadMembers();
+    }
+    else {
+      console.log('user is null');
+    }
   }
 
   pageChanged(event: any) {
