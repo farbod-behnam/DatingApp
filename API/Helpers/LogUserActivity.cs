@@ -18,9 +18,9 @@ namespace API.Helpers
 
             if (!resultContext.HttpContext.User.Identity.IsAuthenticated) return;
 
-            string username = resultContext.HttpContext.User.GetUsername();
+            int userId = resultContext.HttpContext.User.GetUserId();
             IUserRepository repository = resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-            AppUser user = await repository.GetUserByUsernameAsync(username);
+            AppUser user = await repository.GetUserByIdAsync(userId);
             user.LastActive = DateTime.Now;
             await repository.SaveAllAsync();
         }
