@@ -26,6 +26,26 @@
         <button class="btn btn-outline-primary mr-2" type="submit">Apply Filters</button>
         <button class="btn btn-outline-info" type="submit" (click)="resetFilters()">Reset Filters</button>
 
+        <div class="col">
+            <div class="btn-group float-right">
+                <button 
+                    class="btn btn-outline-primary" 
+                    type="button" 
+                    (click)="loadMembers()"
+                    btnRadio='lastActive'
+                    name="orderBy" 
+                    [(ngModel)]="userParams.orderBy">Last Active</button>
+
+                <button 
+                    class="btn btn-outline-primary" 
+                    type="button" 
+                    (click)="loadMembers()"
+                    btnRadio='created'
+                    name="orderBy" 
+                    [(ngModel)]="userParams.orderBy">Newest Members</button>
+            </div>
+        </div>
+
     </form>
 </div>
 
