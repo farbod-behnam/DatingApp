@@ -43,8 +43,14 @@ export class MembersService {
 
 
   getMember(username: string) {
-    const member = this.members.find(mem => mem.username === username);
-    if (member !== undefined) return of(member);
+    const arrayResultOfMap = [...this.memberCache.values()]
+      .reduce((array, element) => array.concat(element.result), []); // flattened members into an array
+
+    const member = arrayResultOfMap.find((member: Member) => member.username === username);
+
+    if (member) {
+      return of(member);
+    }
 
     return this.http.get<Member>(this.baseUrl + 'users/' + username)
   }
