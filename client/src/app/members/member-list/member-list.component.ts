@@ -19,20 +19,11 @@ export class MemberListComponent implements OnInit {
   members: Member[] | undefined;
   pagination: Pagination | undefined;
   userParams!: UserParams;
-  user: User | undefined;
   genderList = [{value: 'male', display: 'Males'}, {value: 'female', display: 'Females'}];
 
 
-  constructor(private memberService: MembersService, private accountService: AccountService) {
-    this.accountService.currentUser$.pipe(take(1)).subscribe(user => {
-      if (user) {
-        this.user = user;
-        this.userParams = new UserParams(user);
-      }
-      else {
-        console.log('user is null');
-      }
-    })
+  constructor(private memberService: MembersService) {
+    this.userParams = this.memberService.getUserParams();
    }
 
   ngOnInit(): void {
@@ -41,6 +32,8 @@ export class MemberListComponent implements OnInit {
   }
 
   loadMembers() {
+    this.memberService.setUserParams(this.userParams);
+
     if (this.userParams) {
       this.memberService.getMembers(this.userParams).subscribe(response => {
         this.members = response.result;
@@ -54,18 +47,14 @@ export class MemberListComponent implements OnInit {
   }
 
   resetFilters() {
-    if (this.user) {
-      this.userParams = new UserParams(this.user);
+      this.userParams = this.memberService.resetUserParams();
       this.loadMembers();
-    }
-    else {
-      console.log('user is null');
-    }
   }
 
   pageChanged(event: any) {
     if (this.userParams) {
       this.userParams.pageNumber = event.page;
+      this.memberService.setUserParams(this.userParams);
       this.loadMembers();
     }
     else {
