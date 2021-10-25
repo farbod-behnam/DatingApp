@@ -36,13 +36,16 @@ namespace API.Data
             // ICollection<PhotoDto> photoDtos = await GetMemberPhotosAsync(username);
             // string photoUrl = await GetMemberMainPhotoUrl(username);
 
+                    // PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain == true).Url,
+                    // PhotoUrl = user.Photos.Where(photo => photo.IsMain == true).Select(photo => photo.Url).SingleOrDefault(),
+
             return await _context.Users
                 .Where(row => row.UserName == username)
                 .Select(user => new MemberDto
                 {
                     Id = user.Id,
                     Username = user.UserName,
-                    PhotoUrl = user.Photos.Where(photo => photo.IsMain == true).Select(photo => photo.Url).SingleOrDefault(),
+                    PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain == true).Url,
                     Age = user.DateOfBirth.CalculateAge(),
                     KnownAs = user.KnownAs,
                     Created = user.Created,
